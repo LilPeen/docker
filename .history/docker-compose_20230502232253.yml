@@ -15,7 +15,7 @@ services:
       cache:
         condition: service_healthy
     env_file:
-      - ./config/prod.env
+      - ~/wger/config/prod.env
     volumes:
       - static:/home/wger/static
       - media:/home/wger/media
@@ -38,11 +38,11 @@ services:
     depends_on:
       - web
     volumes:
-      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ~/config/nginx.conf:/etc/nginx/conf.d/default.conf
       - static:/wger/static:ro
       - media:/wger/media:ro
     ports:
-      - "8002:80"
+      - "80:80"
     healthcheck:
       test: service nginx status
       interval: 10s
@@ -91,7 +91,7 @@ services:
     networks:
       - nginx_default
     env_file:
-      - ./config/prod.env
+      - ~/wger/config/prod.env
     depends_on:
       cache:
         condition: service_healthy
@@ -112,7 +112,7 @@ services:
     volumes:
       - celery-beat:/home/wger/beat/
     env_file:
-      - ./config/prod.env
+      - ~/wger/config/prod.env
     depends_on:
       cache:
         condition: service_healthy
