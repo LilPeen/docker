@@ -15,10 +15,12 @@ services:
       cache:
         condition: service_healthy
     env_file:
-      - ./config/prod.env
+      - ~/wger/config/prod.env
     volumes:
       - static:/home/wger/static
       - media:/home/wger/media
+    networks:
+      - nginx_default
     expose:
       - 8000
     healthcheck:
@@ -31,6 +33,8 @@ services:
   nginx:
     image: nginx:stable
     container_name: wger_nginx
+    networks:
+      - nginx_default
     depends_on:
       - web
     volumes:
@@ -49,6 +53,8 @@ services:
   db:
     image: postgres:12-alpine
     container_name: wger_db
+    networks:
+      - nginx_default
     environment:
       - POSTGRES_USER=wger
       - POSTGRES_PASSWORD=wger
@@ -67,6 +73,8 @@ services:
   cache:
     image: redis
     container_name: wger_cache
+    networks:
+      - nginx_default
     expose:
       - 6379
     healthcheck:
@@ -80,8 +88,10 @@ services:
     image: wger/server:latest
     container_name: wger_celery_worker
     command: /start-worker
+    networks:
+      - nginx_default
     env_file:
-      - ./config/prod.env
+      - ~/wger/config/prod.env
     depends_on:
       cache:
         condition: service_healthy
@@ -97,10 +107,12 @@ services:
     image: wger/server:latest
     container_name: wger_celery_beat
     command: /start-beat
+    networks:
+      - nginx_default
     volumes:
       - celery-beat:/home/wger/beat/
     env_file:
-      - ./config/prod.env
+      - ~/wger/config/prod.env
     depends_on:
       cache:
         condition: service_healthy
@@ -112,5 +124,5 @@ volumes:
   media:
 
 networks:
-  default:
-    name: wger_network
+  nginx_default:
+    external: true
